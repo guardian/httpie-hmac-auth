@@ -14,13 +14,14 @@ try:
 except ImportError:
     import urllib.parse
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 __author__ = 'Nick Satterly'
 __licence__ = 'MIT'
 
 
 class HmacAuth:
-    def __init__(self, access_id, secret_key):
+    def __init__(self, access_key, secret_key):
+        self.access_key = access_key
         self.secret_key = secret_key.encode('ascii')
 
     def __call__(self, r):
@@ -53,7 +54,13 @@ class HmacAuth:
         digest = hmac.new(self.secret_key, string_to_sign, hashlib.sha256).digest()
         signature = base64.encodestring(digest).rstrip()
 
-        r.headers['Authorization'] = 'HMAC %s' % signature
+        if self.access_key == '':
+            r.headers['Authorization'] = 'HMAC %s' % signature
+        elif self.secret_key == '':
+            raise ValueError('HMAC secret key cannot be empty.')
+        else:
+            r.headers['Authorization'] = 'HMAC %s:%s' % (self.access_key, signature)
+
         return r
 
 
@@ -63,5 +70,5 @@ class HmacAuthPlugin(AuthPlugin):
     auth_type = 'hmac'
     description = 'Sign requests using a HMAC authentication method like AWS'
 
-    def get_auth(self, access_id, secret_key):
-        return HmacAuth(access_id, secret_key)
+    def get_auth(self, access_key, secret_key):
+        return HmacAuth(access_key, secret_key)
