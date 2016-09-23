@@ -36,7 +36,7 @@ class HmacAuth:
             if content_type:
                 m = hashlib.md5()
                 m.update(r.body)
-                content_md5 = base64.encodestring(m.digest())
+                content_md5 = base64.encodestring(m.digest()).rstrip()
                 r.headers['Content-MD5'] = content_md5
             else:
                 content_md5 = ''
