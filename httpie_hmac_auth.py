@@ -50,9 +50,9 @@ class HmacAuth:
         url = urlparse(r.url)
         path = url.path
 
-        string_to_sign = '\n'.join([method, content_md5, content_type, httpdate, path]).encode("utf-8")
+        string_to_sign = '\n'.join([method, content_md5, content_type, httpdate, path]).encode('utf-8')
         digest = hmac.new(self.secret_key, string_to_sign, hashlib.sha256).digest()
-        signature = base64.encodestring(digest).rstrip().decode("utf-8")
+        signature = base64.encodestring(digest).rstrip().decode('utf-8')
 
         if self.access_key == '':
             r.headers['Authorization'] = 'HMAC %s' % signature
