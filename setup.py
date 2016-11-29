@@ -8,7 +8,7 @@ setup(
     name='httpie-hmac-auth',
     description='HMAC Auth plugin for HTTPie.',
     long_description=open('README.rst').read().strip(),
-    version='0.2.1',
+    version='0.2.2',
     author='Nick Satterly',
     author_email='nick.satterly@theguardian.com',
     license='MIT',
