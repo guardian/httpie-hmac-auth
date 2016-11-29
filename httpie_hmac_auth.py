@@ -10,9 +10,9 @@ import hmac
 from httpie.plugins import AuthPlugin
 
 try:
-    import urlparse
+    from urlparse import urlparse
 except ImportError:
-    import urllib.parse
+    from urllib.parse import urlparse
 
 __version__ = '0.2.1'
 __author__ = 'Nick Satterly'
@@ -47,12 +47,12 @@ class HmacAuth:
             httpdate = now.strftime('%a, %d %b %Y %H:%M:%S GMT')
             r.headers['Date'] = httpdate
 
-        url = urlparse.urlparse(r.url)
+        url = urlparse(r.url)
         path = url.path
 
-        string_to_sign = '\n'.join([method, content_md5, content_type, httpdate, path])
+        string_to_sign = '\n'.join([method, content_md5, content_type, httpdate, path]).encode('utf-8')
         digest = hmac.new(self.secret_key, string_to_sign, hashlib.sha256).digest()
-        signature = base64.encodestring(digest).rstrip()
+        signature = base64.encodestring(digest).rstrip().decode('utf-8')
 
         if self.access_key == '':
             r.headers['Authorization'] = 'HMAC %s' % signature
