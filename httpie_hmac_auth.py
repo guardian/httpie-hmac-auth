@@ -70,5 +70,5 @@ class HmacAuthPlugin(AuthPlugin):
     auth_type = 'hmac'
     description = 'Sign requests using a HMAC authentication method like AWS'
 
-    def get_auth(self, access_key, secret_key):
-        return HmacAuth(access_key, secret_key)
+    def get_auth(self, username=None, password=None):
+        return HmacAuth(username, password)
