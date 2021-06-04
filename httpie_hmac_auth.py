@@ -30,16 +30,21 @@ class HmacAuth:
         content_type = r.headers.get('content-type')
         if not content_type:
             content_type = ''
+        elif isinstance(content_type, bytes):
+            content_type = content_type.decode("utf-8")
 
         content_md5 = r.headers.get('content-md5')
         if not content_md5:
             if content_type:
                 m = hashlib.md5()
                 m.update(r.body)
-                content_md5 = base64.encodestring(m.digest()).rstrip()
+                base64digest = base64.b64encode(m.digest())
+                content_md5 = base64digest.decode("utf-8")
                 r.headers['Content-MD5'] = content_md5
             else:
                 content_md5 = ''
+        elif isinstance(content_md5, bytes):
+            content_md5 = content_md5.decode("utf-8")
 
         httpdate = r.headers.get('date')
         if not httpdate:
@@ -52,7 +57,7 @@ class HmacAuth:
 
         string_to_sign = '\n'.join([method, content_md5, content_type, httpdate, path]).encode('utf-8')
         digest = hmac.new(self.secret_key, string_to_sign, hashlib.sha256).digest()
-        signature = base64.encodestring(digest).rstrip().decode('utf-8')
+        signature = base64.b64encode(digest).decode('utf-8')
 
         if self.access_key == '':
             r.headers['Authorization'] = 'HMAC %s' % signature
